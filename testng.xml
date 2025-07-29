@@ -1,0 +1,27 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="MindtekTestNGFramework">
+    <test name="UI Automation">
+        <groups>
+            <run>
+                <include name="testbase"/>
+                <include name="regression"/>
+<!--                <exclude name="positive"/>-->
+            </run>
+        </groups>
+        <classes>
+            <class name="tests.FrameworkTest"/>
+            <class name="tests.SmartbearLoginTest"/>
+            <class name="tests.BlazedemoCitiesTest"/>
+            <class name="tests.SaucedemoLoginTest"/>
+            <class name="tests.MagentoSignUpTest"/>
+            <class name="tests.SaucedemoSortingTest"/>
+        </classes>
+    </test>
+
+<!--    API and Mobile test groups are also in the test suite-->
+
+<!--    <test name="API Automation">-->
+<!--    </test>-->
+<!--    <test name="Mobile">-->
+<!--    </test>-->
+</suite>
