@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="MindtekTestNGFramework">
+    <test name="API Automation">
+        <groups>
+            <run>
+                <include name="regression"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="tests.HRApiTest"/>
+            <class name="tests.HRApiAuthorizationTest"/>
+            <class name="tests.HRApiPutCallTest"/>
+            <class name="tests.HrApiDeleteCallTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Employee & Department Manager (with Modals)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4 bg-light">
+  <div class="container">
+    <h2 class="mb-4">Employee & Department Manager</h2>
+
+    <!-- Add Department Form -->
+    <div class="card mb-4">
+      <div class="card-header">Add Department</div>
+      <div class="card-body">
+        <form id="departmentForm" class="row g-3">
+          <div class="col-md-6">
+            <input type="text" id="deptName" class="form-control" placeholder="Department Name" required>
+          </div>
+          <div class="col-md-6">
+            <input type="number" id="deptLocation" class="form-control" placeholder="Location ID" required>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary">Add Department</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Employee Form -->
+    <div class="card mb-4">
+      <div class="card-header">Add Employee</div>
+      <div class="card-body">
+        <form id="employeeForm" class="row g-3">
+          <div class="col-md-3">
+            <input type="text" id="empFirstName" class="form-control" placeholder="First Name" required>
+          </div>
+          <div class="col-md-3">
+            <input type="text" id="empLastName" class="form-control" placeholder="Last Name" required>
+          </div>
+          <div class="col-md-3">
+            <input type="email" id="empEmail" class="form-control" placeholder="Email" required>
+          </div>
+          <div class="col-md-3">
+            <input type="date" id="empHireDate" class="form-control" required>
+          </div>
+          <div class="col-md-3">
+            <input type="text" id="empJobId" class="form-control" placeholder="Job ID" required>
+          </div>
+          <div class="col-md-3">
+            <input type="number" id="empSalary" class="form-control" placeholder="Salary" required>
+          </div>
+          <div class="col-md-3">
+            <select id="empDept" class="form-select" required>
+              <option value="">Select Department</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-success">Add Employee</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Departments Table -->
+    <div class="card mb-4">
+      <div class="card-header">Departments</div>
+      <div class="card-body">
+        <table class="table table-bordered table-striped">
+          <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Actions</th></tr></thead>
+          <tbody id="deptTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Employees Table -->
+    <div class="card">
+      <div class="card-header">Employees</div>
+      <div class="card-body">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>Email</th><th>Hire Date</th><th>Job ID</th><th>Salary</th><th>Department</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="empTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Employee Modal -->
+  <div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="editEmployeeForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Employee</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editEmpId">
+            <input type="text" id="editEmpFirstName" class="form-control mb-2" placeholder="First Name" required>
+            <input type="text" id="editEmpLastName" class="form-control mb-2" placeholder="Last Name" required>
+            <input type="email" id="editEmpEmail" class="form-control mb-2" placeholder="Email" required>
+            <input type="date" id="editEmpHireDate" class="form-control mb-2" required>
+            <input type="text" id="editEmpJobId" class="form-control mb-2" placeholder="Job ID" required>
+            <input type="number" id="editEmpSalary" class="form-control mb-2" placeholder="Salary" required>
+            <select id="editEmpDept" class="form-select mb-2" required></select>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Department Modal -->
+  <div class="modal fade" id="editDepartmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="editDepartmentForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Department</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editDeptId">
+            <input type="text" id="editDeptName" class="form-control mb-2" placeholder="Department Name" required>
+            <input type="number" id="editDeptLocation" class="form-control mb-2" placeholder="Location ID" required>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const apiBase = 'http://localhost:3000/api';
+
+    async function loadDepartments() {
+      const res = await fetch(`${apiBase}/departments`);
+      const data = await res.json();
+      const deptTable = document.getElementById("deptTableBody");
+      const deptSelect = document.getElementById("empDept");
+      const editDeptSelect = document.getElementById("editEmpDept");
+      deptTable.innerHTML = "";
+      deptSelect.innerHTML = '<option value="">Select Department</option>';
+      editDeptSelect.innerHTML = '<option value="">Select Department</option>';
+      data.forEach(dept => {
+        deptTable.innerHTML += `
+          <tr>
+            <td>${dept.department_id}</td>
+            <td>${dept.department_name}</td>
+            <td>${dept.location_id}</td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick="openEditDepartment(${dept.department_id}, '${dept.department_name}', ${dept.location_id})">Edit</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteDepartment(${dept.department_id})">Delete</button>
+            </td>
+          </tr>`;
+        deptSelect.innerHTML += `<option value="${dept.department_id}">${dept.department_name}</option>`;
+        editDeptSelect.innerHTML += `<option value="${dept.department_id}">${dept.department_name}</option>`;
+      });
+    }
+
+    document.getElementById("departmentForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  try {
+    const response = await fetch(`${apiBase}/departments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: document.getElementById("deptName").value,
+        location_id: parseInt(document.getElementById("deptLocation").value)
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      alert(`Error: ${error.error}`);
+    } else {
+      alert("Department created successfully!");
+      document.getElementById("departmentForm").reset();
+      loadDepartments(); // ✅ Safely refresh table after adding
+    }
+  } catch (error) {
+    console.error("Error while creating department:", error);
+    alert("Unexpected error occurred");
+  }
+});
+
+    async function loadEmployees() {
+      const res = await fetch(`${apiBase}/employees`);
+      const emps = await res.json();
+      const depts = await fetch(`${apiBase}/departments`).then(res => res.json());
+      const empTable = document.getElementById("empTableBody");
+      empTable.innerHTML = "";
+      emps.forEach(emp => {
+        const deptName = depts.find(d => d.department_id === emp.department_id)?.department_name || 'N/A';
+        empTable.innerHTML += `
+          <tr>
+            <td>${emp.employee_id}</td>
+            <td>${emp.first_name} ${emp.last_name}</td>
+            <td>${emp.email}</td>
+            <td>${emp.hire_date}</td>
+            <td>${emp.job_id}</td>
+            <td>${emp.salary}</td>
+            <td>${deptName}</td>
+            <td>
+              <button class="btn btn-sm btn-warning" onclick="openEditEmployee(${emp.employee_id})">Edit</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.employee_id})">Delete</button>
+            </td>
+          </tr>`;
+      });
+    }
+
+    document.getElementById("employeeForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        const response = await fetch(`${apiBase}/employees`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            first_name: document.getElementById("empFirstName").value,
+            last_name: document.getElementById("empLastName").value,
+            email: document.getElementById("empEmail").value,
+            hire_date: document.getElementById("empHireDate").value,
+            job_id: parseInt(document.getElementById("empJobId").value),
+            salary: parseFloat(document.getElementById("empSalary").value),
+            department_id: parseInt(document.getElementById("empDept").value)
+          })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          alert(`Error: ${error.error}`);
+        } else {
+          alert("Employee created successfully!");
+          document.getElementById("employeeForm").reset();
+          loadEmployees();
+        }
+      } catch (error) {
+        console.error("Error while creating employee:", error);
+        alert("Unexpected error occurred");
+      }
+    });
+
+    // Show modals prefilled
+    async function openEditEmployee(id) {
+      const emp = await fetch(`${apiBase}/employees/${id}`).then(res => res.json());
+      document.getElementById("editEmpId").value = emp.employee_id;
+      document.getElementById("editEmpFirstName").value = emp.first_name;
+      document.getElementById("editEmpLastName").value = emp.last_name;
+      document.getElementById("editEmpEmail").value = emp.email;
+      document.getElementById("editEmpHireDate").value = emp.hire_date;
+      document.getElementById("editEmpJobId").value = emp.job_id;
+      document.getElementById("editEmpSalary").value = emp.salary;
+      document.getElementById("editEmpDept").value = emp.department_id || "";
+      new bootstrap.Modal(document.getElementById('editEmployeeModal')).show();
+    }
+
+    async function openEditDepartment(id, name, location_id) {
+      document.getElementById("editDeptId").value = id;
+      document.getElementById("editDeptName").value = name;
+      document.getElementById("editDeptLocation").value = location_id;
+      new bootstrap.Modal(document.getElementById('editDepartmentModal')).show();
+    }
+
+    document.getElementById("editEmployeeForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const id = document.getElementById("editEmpId").value;
+      await fetch(`${apiBase}/employees/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: document.getElementById("editEmpFirstName").value,
+          last_name: document.getElementById("editEmpLastName").value,
+          email: document.getElementById("editEmpEmail").value,
+          hire_date: document.getElementById("editEmpHireDate").value,
+          job_id: document.getElementById("editEmpJobId").value,
+          salary: document.getElementById("editEmpSalary").value,
+          department_id: document.getElementById("editEmpDept").value
+        })
+      });
+      bootstrap.Modal.getInstance(document.getElementById('editEmployeeModal')).hide();
+      loadEmployees();
+    });
+
+    document.getElementById("editDepartmentForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const id = document.getElementById("editDeptId").value;
+      await fetch(`${apiBase}/departments/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById("editDeptName").value,
+          location_id: document.getElementById("editDeptLocation").value
+        })
+      });
+      bootstrap.Modal.getInstance(document.getElementById('editDepartmentModal')).hide();
+      loadDepartments();
+    });
+
+    function deleteEmployee(id) {
+      if (confirm("Delete employee?")) {
+        fetch(`${apiBase}/employees/${id}`, { method: 'DELETE' }).then(loadEmployees);
+      }
+    }
+
+    function deleteDepartment(id) {
+      if (confirm("Delete department?")) {
+        fetch(`${apiBase}/departments/${id}`, { method: 'DELETE' }).then(loadDepartments);
+      }
+    }
+
+    // Initial load
+    loadDepartments();
+    loadEmployees();
+  </script>
+</body>
+</html>

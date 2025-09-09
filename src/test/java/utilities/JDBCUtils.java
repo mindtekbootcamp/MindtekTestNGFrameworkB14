@@ -17,6 +17,7 @@ public class JDBCUtils {
     }
 
     public static List<Map<String, Object>> executeQuery(String query) throws SQLException {
+        System.out.println("Running query: "+query);
         resultSet = statement.executeQuery(query);
         List<Map<String, Object>> data = new ArrayList<>();
         ResultSetMetaData rsMeta = resultSet.getMetaData();

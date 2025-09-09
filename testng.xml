@@ -18,10 +18,4 @@
         </classes>
     </test>
 
-<!--    API and Mobile test groups are also in the test suite-->
-
-<!--    <test name="API Automation">-->
-<!--    </test>-->
-<!--    <test name="Mobile">-->
-<!--    </test>-->
 </suite>

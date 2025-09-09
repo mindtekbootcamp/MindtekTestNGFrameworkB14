@@ -15,7 +15,7 @@ public class ConfigReader {
     private static FileInputStream input;
     private static Properties properties;
     static {
-        String path = "/Users/mindtekbatch14/IdeaProjects/MindtekTestNGFramework/src/test/resources/configurations/Configuration.properties";
+        String path = "/Users/mindtekbatch14/IdeaProjects/MindtekTestNGFrameworkB14/src/test/resources/configurations/Configuration.properties";
         try {
             input = new FileInputStream(path);
             properties = new Properties();
